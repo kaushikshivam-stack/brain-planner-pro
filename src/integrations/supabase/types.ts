@@ -18,24 +18,30 @@ export type Database = {
         Row: {
           avatar_url: string | null
           created_at: string
+          daily_hours: number
           display_name: string | null
           id: string
+          preferred_start: string
           updated_at: string
           user_id: string
         }
         Insert: {
           avatar_url?: string | null
           created_at?: string
+          daily_hours?: number
           display_name?: string | null
           id?: string
+          preferred_start?: string
           updated_at?: string
           user_id: string
         }
         Update: {
           avatar_url?: string | null
           created_at?: string
+          daily_hours?: number
           display_name?: string | null
           id?: string
+          preferred_start?: string
           updated_at?: string
           user_id?: string
         }
@@ -120,8 +126,10 @@ export type Database = {
           color: string
           completed_hours: number
           created_at: string
+          exam_date: string | null
           goal_hours: number
           id: string
+          is_weak: boolean
           name: string
           updated_at: string
           user_id: string
@@ -130,8 +138,10 @@ export type Database = {
           color?: string
           completed_hours?: number
           created_at?: string
+          exam_date?: string | null
           goal_hours?: number
           id?: string
+          is_weak?: boolean
           name: string
           updated_at?: string
           user_id: string
@@ -140,8 +150,10 @@ export type Database = {
           color?: string
           completed_hours?: number
           created_at?: string
+          exam_date?: string | null
           goal_hours?: number
           id?: string
+          is_weak?: boolean
           name?: string
           updated_at?: string
           user_id?: string
