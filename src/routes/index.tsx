@@ -1,26 +1,43 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Header } from "@/components/study/Header";
+import { ScheduleList } from "@/components/study/ScheduleList";
+import { SubjectsPanel } from "@/components/study/SubjectsPanel";
+import { AnalyticsChart } from "@/components/study/AnalyticsChart";
+import { PomodoroTimer } from "@/components/study/PomodoroTimer";
+import { AICopilot } from "@/components/study/AICopilot";
+import { Toaster } from "@/components/ui/sonner";
 
 export const Route = createFileRoute("/")({
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. For sites with multiple pages (About, Services, Contact, etc.),
-// create separate route files (about.tsx, services.tsx, contact.tsx) — don't put all pages in this file.
-function PlaceholderIndex() {
+function Index() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
+    <div className="min-h-dvh w-full px-4 sm:px-8 py-8 max-w-7xl mx-auto">
+      <Header />
+
+      <main className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-10">
+        <div className="lg:col-span-4">
+          <ScheduleList />
+        </div>
+        <div className="lg:col-span-5">
+          <SubjectsPanel />
+        </div>
+        <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6">
+          <AnalyticsChart />
+          <PomodoroTimer />
+        </div>
+      </main>
+
+      <section className="pb-10">
+        <AICopilot />
+      </section>
+
+      <footer className="text-center text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 py-6">
+        Noesis · Smart Study Planner · Built with Lovable
+      </footer>
+
+      <Toaster />
     </div>
   );
-}
-
-function Index() {
-  return <PlaceholderIndex />;
 }
