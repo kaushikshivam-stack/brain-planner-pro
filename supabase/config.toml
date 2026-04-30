@@ -1,1 +1,4 @@
 project_id = "fnimcnemdbuyxlvbpgnt"
+
+[functions.study-ai]
+verify_jwt = false
