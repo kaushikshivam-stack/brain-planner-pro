@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useReminders } from "@/lib/use-reminders";
 
 export function RemindersBell() {
-  const { reminders, unread, markAllRead, clear } = useReminders();
+  const { reminders, unread, markAllRead, clear, snooze, snoozeOptions } = useReminders();
   const [open, setOpen] = useState(false);
 
   const toggle = () => {
