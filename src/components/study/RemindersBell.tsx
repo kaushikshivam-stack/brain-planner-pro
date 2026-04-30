@@ -52,9 +52,24 @@ export function RemindersBell() {
                   <li key={r.id} className="p-2 rounded-lg hover:bg-white/[0.03] transition">
                     <p className="text-sm font-medium text-foreground">{r.title}</p>
                     <p className="text-xs text-muted-foreground">{r.body}</p>
-                    <p className="text-[10px] text-muted-foreground/60 mt-0.5 text-mono">
-                      {new Date(r.at).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
-                    </p>
+                    <div className="flex items-center justify-between mt-1.5">
+                      <p className="text-[10px] text-muted-foreground/60 text-mono">
+                        {new Date(r.at).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
+                      </p>
+                      <div className="flex items-center gap-1">
+                        <span className="text-[9px] uppercase tracking-wider text-muted-foreground/60 mr-1">Snooze</span>
+                        {snoozeOptions.map((m) => (
+                          <button
+                            key={m}
+                            onClick={() => snooze(r.blockId, r.kind, m)}
+                            className="px-1.5 py-0.5 rounded-md text-[10px] text-mono text-muted-foreground hover:text-foreground hover:bg-white/[0.05] transition"
+                            title={`Snooze ${m} minutes`}
+                          >
+                            {m}m
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   </li>
                 ))}
               </ul>
