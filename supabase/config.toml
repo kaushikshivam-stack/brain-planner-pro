@@ -2,3 +2,6 @@ project_id = "fnimcnemdbuyxlvbpgnt"
 
 [functions.study-ai]
 verify_jwt = false
+
+[functions.study-plan]
+verify_jwt = false

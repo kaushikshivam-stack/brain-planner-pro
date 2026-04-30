@@ -19,6 +19,8 @@ export type Subject = {
   goalHours: number;
   completedHours: number;
   color: string;
+  examDate?: string | null;
+  isWeak: boolean;
 };
 
 export type StudySession = {
@@ -79,6 +81,8 @@ export function useStudyData() {
         goalHours: Number(r.goal_hours),
         completedHours: Number(r.completed_hours),
         color: r.color,
+        examDate: r.exam_date ?? null,
+        isWeak: r.is_weak ?? false,
       })),
       schedule: (schedRes.data ?? []).map((r) => ({
         id: r.id,
@@ -123,6 +127,54 @@ export function useStudyData() {
     reload();
   };
 
+  const updateSubject = async (
+    id: string,
+    patch: Partial<{ goalHours: number; examDate: string | null; isWeak: boolean; name: string }>,
+  ) => {
+    const dbPatch: {
+      goal_hours?: number;
+      exam_date?: string | null;
+      is_weak?: boolean;
+      name?: string;
+    } = {};
+    if (patch.goalHours !== undefined) dbPatch.goal_hours = patch.goalHours;
+    if (patch.examDate !== undefined) dbPatch.exam_date = patch.examDate;
+    if (patch.isWeak !== undefined) dbPatch.is_weak = patch.isWeak;
+    if (patch.name !== undefined) dbPatch.name = patch.name;
+    await supabase.from("subjects").update(dbPatch).eq("id", id);
+    reload();
+  };
+
+  const addBlocksBulk = async (
+    blocks: Array<Omit<ScheduleBlock, "id" | "done">>,
+    opts?: { replaceFutureFrom?: string },
+  ) => {
+    if (!user) return;
+    if (opts?.replaceFutureFrom) {
+      // Remove undone future blocks from this date onward, so AI plan replaces cleanly
+      await supabase
+        .from("schedule_blocks")
+        .delete()
+        .eq("user_id", user.id)
+        .gte("date", opts.replaceFutureFrom)
+        .eq("done", false);
+    }
+    if (blocks.length > 0) {
+      await supabase.from("schedule_blocks").insert(
+        blocks.map((b) => ({
+          user_id: user.id,
+          date: b.date,
+          start_time: b.startTime,
+          end_time: b.endTime,
+          subject: b.subject,
+          topic: b.topic,
+          done: false,
+        })),
+      );
+    }
+    reload();
+  };
+
   const addBlock = async (block: Omit<ScheduleBlock, "id" | "done">) => {
     if (!user) return;
     await supabase.from("schedule_blocks").insert({
@@ -161,8 +213,45 @@ export function useStudyData() {
     reload,
     addSubject,
     removeSubject,
+    updateSubject,
     addBlock,
+    addBlocksBulk,
     toggleBlock,
     logSession,
   };
+}
+
+// Compute consecutive-day streak based on "all scheduled blocks for that day done".
+// Days with zero scheduled blocks break the streak (no plan = no commitment met).
+// We start counting from today if today has blocks all done, otherwise from yesterday.
+export function computeStreak(schedule: ScheduleBlock[]): number {
+  const byDate = new Map<string, ScheduleBlock[]>();
+  for (const b of schedule) {
+    if (!byDate.has(b.date)) byDate.set(b.date, []);
+    byDate.get(b.date)!.push(b);
+  }
+  const today = todayStr();
+  let streak = 0;
+  const cursor = new Date(today + "T00:00:00");
+
+  // If today is not yet fully done, don't penalize — start from yesterday.
+  const todayBlocks = byDate.get(today) ?? [];
+  const todayComplete = todayBlocks.length > 0 && todayBlocks.every((b) => b.done);
+  if (!todayComplete) cursor.setDate(cursor.getDate() - 1);
+
+  while (true) {
+    const key = cursor.toISOString().slice(0, 10);
+    const blocks = byDate.get(key);
+    if (!blocks || blocks.length === 0) break;
+    if (!blocks.every((b) => b.done)) break;
+    streak += 1;
+    cursor.setDate(cursor.getDate() - 1);
+    if (streak > 365) break;
+  }
+  return streak;
+}
+
+export function getMissedBlocks(schedule: ScheduleBlock[]): ScheduleBlock[] {
+  const today = todayStr();
+  return schedule.filter((b) => b.date < today && !b.done);
 }

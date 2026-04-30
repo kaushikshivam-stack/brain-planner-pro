@@ -3,6 +3,9 @@ import { useAuth } from "@/lib/auth-context";
 import { useStudyData } from "@/lib/study-store";
 import { todayStr } from "@/lib/study-store";
 import { RemindersBell } from "@/components/study/RemindersBell";
+import { TimetableGenerator } from "@/components/study/TimetableGenerator";
+import { RecoveryButton } from "@/components/study/RecoveryButton";
+import { StreakBadge } from "@/components/study/StreakBadge";
 
 export function Header() {
   const { user, signOut } = useAuth();
@@ -43,8 +46,11 @@ export function Header() {
         )}
       </div>
 
-      <div className="flex items-center gap-3">
-        <div className="text-right">
+      <div className="flex items-center gap-2 flex-wrap justify-end">
+        <StreakBadge />
+        <RecoveryButton />
+        <TimetableGenerator />
+        <div className="text-right ml-2">
           <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">Local Time</p>
           <p className="text-mono text-2xl font-light text-foreground">
             {new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false })}
