@@ -1,4 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { Loader2 } from "lucide-react";
 import { Header } from "@/components/study/Header";
 import { ScheduleList } from "@/components/study/ScheduleList";
 import { SubjectsPanel } from "@/components/study/SubjectsPanel";
@@ -6,12 +8,31 @@ import { AnalyticsChart } from "@/components/study/AnalyticsChart";
 import { PomodoroTimer } from "@/components/study/PomodoroTimer";
 import { AICopilot } from "@/components/study/AICopilot";
 import { Toaster } from "@/components/ui/sonner";
+import { useAuth } from "@/lib/auth-context";
+import { useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
   component: Index,
 });
 
 function Index() {
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate({ to: "/auth" });
+    }
+  }, [loading, user, navigate]);
+
+  if (loading || !user) {
+    return (
+      <div className="min-h-dvh flex items-center justify-center">
+        <Loader2 className="size-6 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-dvh w-full px-4 sm:px-8 py-8 max-w-7xl mx-auto">
       <Header />
