@@ -1,27 +1,18 @@
 import { Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { uid, useStudyData } from "@/lib/study-store";
-
-const COLORS = ["chart-1", "chart-2", "chart-3", "chart-4", "chart-5"];
+import { useStudyData } from "@/lib/study-store";
 
 export function SubjectsPanel() {
-  const { data, setData } = useStudyData();
+  const { data, addSubject, removeSubject } = useStudyData();
   const [adding, setAdding] = useState(false);
   const [draft, setDraft] = useState({ name: "", goalHours: 20 });
 
-  const add = () => {
+  const add = async () => {
     if (!draft.name) return;
-    const color = COLORS[data.subjects.length % COLORS.length];
-    setData((d) => ({
-      ...d,
-      subjects: [...d.subjects, { id: uid(), name: draft.name, goalHours: draft.goalHours, completedHours: 0, color }],
-    }));
+    await addSubject(draft.name, draft.goalHours);
     setDraft({ name: "", goalHours: 20 });
     setAdding(false);
   };
-
-  const remove = (id: string) =>
-    setData((d) => ({ ...d, subjects: d.subjects.filter((s) => s.id !== id) }));
 
   return (
     <section className="glass rounded-2xl p-6">
@@ -63,6 +54,11 @@ export function SubjectsPanel() {
       )}
 
       <div className="space-y-5">
+        {data.subjects.length === 0 && (
+          <p className="text-sm text-muted-foreground text-center py-4">
+            No subjects yet. Add one to start tracking goals.
+          </p>
+        )}
         {data.subjects.map((s) => {
           const pct = Math.min(100, Math.round((s.completedHours / Math.max(1, s.goalHours)) * 100));
           return (
@@ -83,7 +79,7 @@ export function SubjectsPanel() {
                     {pct}%
                   </span>
                   <button
-                    onClick={() => remove(s.id)}
+                    onClick={() => removeSubject(s.id)}
                     className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition"
                     aria-label="Remove"
                   >

@@ -1,9 +1,9 @@
 import { CheckCircle2, Circle, Plus } from "lucide-react";
 import { useState } from "react";
-import { todayStr, uid, useStudyData } from "@/lib/study-store";
+import { todayStr, useStudyData } from "@/lib/study-store";
 
 export function ScheduleList() {
-  const { data, setData, hydrated } = useStudyData();
+  const { data, hydrated, addBlock, toggleBlock } = useStudyData();
   const [adding, setAdding] = useState(false);
   const [draft, setDraft] = useState({ startTime: "09:00", endTime: "10:00", subject: "", topic: "" });
 
@@ -12,18 +12,9 @@ export function ScheduleList() {
     .filter((b) => b.date === today)
     .sort((a, b) => a.startTime.localeCompare(b.startTime));
 
-  const toggle = (id: string) =>
-    setData((d) => ({
-      ...d,
-      schedule: d.schedule.map((b) => (b.id === id ? { ...b, done: !b.done } : b)),
-    }));
-
-  const add = () => {
+  const add = async () => {
     if (!draft.subject || !draft.topic) return;
-    setData((d) => ({
-      ...d,
-      schedule: [...d.schedule, { id: uid(), date: today, ...draft, done: false }],
-    }));
+    await addBlock({ date: today, ...draft });
     setDraft({ startTime: "09:00", endTime: "10:00", subject: "", topic: "" });
     setAdding(false);
   };
@@ -101,7 +92,7 @@ export function ScheduleList() {
                 {active && (
                   <span className="absolute -left-[5px] top-4 size-2.5 rounded-full bg-primary glow-primary" />
                 )}
-                <button onClick={() => toggle(b.id)} className="mt-0.5 shrink-0">
+                <button onClick={() => toggleBlock(b.id, !b.done)} className="mt-0.5 shrink-0">
                   {b.done ? (
                     <CheckCircle2 className="size-4 text-accent" />
                   ) : (

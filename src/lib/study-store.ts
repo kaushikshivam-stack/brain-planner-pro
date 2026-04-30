@@ -1,10 +1,12 @@
-// Simple localStorage-backed store for the study planner.
-import { useEffect, useState } from "react";
+// Cloud-backed study data sync. Replaces localStorage when user is signed in.
+import { useCallback, useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/lib/auth-context";
 
 export type ScheduleBlock = {
   id: string;
-  date: string; // YYYY-MM-DD
-  startTime: string; // HH:mm
+  date: string;
+  startTime: string;
   endTime: string;
   subject: string;
   topic: string;
@@ -16,14 +18,14 @@ export type Subject = {
   name: string;
   goalHours: number;
   completedHours: number;
-  color: string; // chart token name e.g. "chart-1"
+  color: string;
 };
 
 export type StudySession = {
   id: string;
-  subjectId?: string;
+  subjectId?: string | null;
   minutes: number;
-  date: string; // YYYY-MM-DD
+  date: string;
 };
 
 export type StudyData = {
@@ -32,78 +34,135 @@ export type StudyData = {
   sessions: StudySession[];
 };
 
-const KEY = "noesis.study.v1";
-
-const defaultData = (): StudyData => {
-  const today = new Date().toISOString().slice(0, 10);
-  const subjects: Subject[] = [
-    { id: "s1", name: "Mathematics", goalHours: 40, completedHours: 28, color: "chart-1" },
-    { id: "s2", name: "Physics", goalHours: 35, completedHours: 31, color: "chart-2" },
-    { id: "s3", name: "Chemistry", goalHours: 30, completedHours: 12, color: "chart-3" },
-    { id: "s4", name: "English", goalHours: 20, completedHours: 16, color: "chart-4" },
-  ];
-  const schedule: ScheduleBlock[] = [
-    { id: "b1", date: today, startTime: "09:00", endTime: "10:30", subject: "Mathematics", topic: "Calculus — Integration practice", done: true },
-    { id: "b2", date: today, startTime: "11:00", endTime: "12:30", subject: "Physics", topic: "Rotational dynamics", done: false },
-    { id: "b3", date: today, startTime: "14:00", endTime: "15:30", subject: "Chemistry", topic: "Organic — Reaction mechanisms", done: false },
-    { id: "b4", date: today, startTime: "17:00", endTime: "18:00", subject: "English", topic: "Comprehension drill", done: false },
-  ];
-  const sessions: StudySession[] = Array.from({ length: 7 }).map((_, i) => {
-    const d = new Date();
-    d.setDate(d.getDate() - (6 - i));
-    return {
-      id: `init-${i}`,
-      minutes: [120, 180, 90, 240, 60, 200, 150][i],
-      date: d.toISOString().slice(0, 10),
-    };
-  });
-  return { subjects, schedule, sessions };
-};
-
-export function loadData(): StudyData {
-  if (typeof window === "undefined") return defaultData();
-  try {
-    const raw = localStorage.getItem(KEY);
-    if (!raw) {
-      const d = defaultData();
-      localStorage.setItem(KEY, JSON.stringify(d));
-      return d;
-    }
-    return JSON.parse(raw) as StudyData;
-  } catch {
-    return defaultData();
-  }
-}
-
-export function saveData(d: StudyData) {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(KEY, JSON.stringify(d));
-}
-
-export function useStudyData() {
-  const [data, setData] = useState<StudyData>(() => defaultData());
-  const [hydrated, setHydrated] = useState(false);
-
-  useEffect(() => {
-    setData(loadData());
-    setHydrated(true);
-  }, []);
-
-  const update = (mut: (d: StudyData) => StudyData) => {
-    setData((prev) => {
-      const next = mut(prev);
-      saveData(next);
-      return next;
-    });
-  };
-
-  return { data, setData: update, hydrated };
-}
-
 export function todayStr() {
   return new Date().toISOString().slice(0, 10);
 }
 
-export function uid() {
-  return Math.random().toString(36).slice(2, 10);
+const COLORS = ["chart-1", "chart-2", "chart-3", "chart-4", "chart-5"];
+
+const SEED_SUBJECTS = [
+  { name: "Mathematics", goal_hours: 40, completed_hours: 0, color: "chart-1" },
+  { name: "Physics", goal_hours: 35, completed_hours: 0, color: "chart-2" },
+  { name: "Chemistry", goal_hours: 30, completed_hours: 0, color: "chart-3" },
+];
+
+export function useStudyData() {
+  const { user } = useAuth();
+  const [data, setData] = useState<StudyData>({ subjects: [], schedule: [], sessions: [] });
+  const [hydrated, setHydrated] = useState(false);
+
+  const reload = useCallback(async () => {
+    if (!user) {
+      setData({ subjects: [], schedule: [], sessions: [] });
+      setHydrated(true);
+      return;
+    }
+    const [subRes, schedRes, sessRes] = await Promise.all([
+      supabase.from("subjects").select("*").order("created_at"),
+      supabase.from("schedule_blocks").select("*").order("start_time"),
+      supabase.from("study_sessions").select("*").order("date"),
+    ]);
+
+    // Seed subjects on first load if empty
+    if (subRes.data && subRes.data.length === 0) {
+      await supabase.from("subjects").insert(
+        SEED_SUBJECTS.map((s) => ({ ...s, user_id: user.id })),
+      );
+      const reseed = await supabase.from("subjects").select("*").order("created_at");
+      subRes.data = reseed.data ?? [];
+    }
+
+    setData({
+      subjects: (subRes.data ?? []).map((r) => ({
+        id: r.id,
+        name: r.name,
+        goalHours: Number(r.goal_hours),
+        completedHours: Number(r.completed_hours),
+        color: r.color,
+      })),
+      schedule: (schedRes.data ?? []).map((r) => ({
+        id: r.id,
+        date: r.date,
+        startTime: r.start_time,
+        endTime: r.end_time,
+        subject: r.subject,
+        topic: r.topic,
+        done: r.done,
+      })),
+      sessions: (sessRes.data ?? []).map((r) => ({
+        id: r.id,
+        subjectId: r.subject_id,
+        minutes: r.minutes,
+        date: r.date,
+      })),
+    });
+    setHydrated(true);
+  }, [user]);
+
+  useEffect(() => {
+    setHydrated(false);
+    reload();
+  }, [reload]);
+
+  // Mutations
+  const addSubject = async (name: string, goalHours: number) => {
+    if (!user) return;
+    const color = COLORS[data.subjects.length % COLORS.length];
+    await supabase.from("subjects").insert({
+      user_id: user.id,
+      name,
+      goal_hours: goalHours,
+      completed_hours: 0,
+      color,
+    });
+    reload();
+  };
+
+  const removeSubject = async (id: string) => {
+    await supabase.from("subjects").delete().eq("id", id);
+    reload();
+  };
+
+  const addBlock = async (block: Omit<ScheduleBlock, "id" | "done">) => {
+    if (!user) return;
+    await supabase.from("schedule_blocks").insert({
+      user_id: user.id,
+      date: block.date,
+      start_time: block.startTime,
+      end_time: block.endTime,
+      subject: block.subject,
+      topic: block.topic,
+      done: false,
+    });
+    reload();
+  };
+
+  const toggleBlock = async (id: string, done: boolean) => {
+    await supabase.from("schedule_blocks").update({ done }).eq("id", id);
+    setData((d) => ({
+      ...d,
+      schedule: d.schedule.map((b) => (b.id === id ? { ...b, done } : b)),
+    }));
+  };
+
+  const logSession = async (minutes: number) => {
+    if (!user) return;
+    await supabase.from("study_sessions").insert({
+      user_id: user.id,
+      minutes,
+      date: todayStr(),
+    });
+    reload();
+  };
+
+  return {
+    data,
+    hydrated,
+    reload,
+    addSubject,
+    removeSubject,
+    addBlock,
+    toggleBlock,
+    logSession,
+  };
 }
