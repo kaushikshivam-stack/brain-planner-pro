@@ -131,7 +131,12 @@ export function useStudyData() {
     id: string,
     patch: Partial<{ goalHours: number; examDate: string | null; isWeak: boolean; name: string }>,
   ) => {
-    const dbPatch: Record<string, unknown> = {};
+    const dbPatch: {
+      goal_hours?: number;
+      exam_date?: string | null;
+      is_weak?: boolean;
+      name?: string;
+    } = {};
     if (patch.goalHours !== undefined) dbPatch.goal_hours = patch.goalHours;
     if (patch.examDate !== undefined) dbPatch.exam_date = patch.examDate;
     if (patch.isWeak !== undefined) dbPatch.is_weak = patch.isWeak;
