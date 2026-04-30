@@ -2,6 +2,7 @@ import { LogOut, Loader2 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { useStudyData } from "@/lib/study-store";
 import { todayStr } from "@/lib/study-store";
+import { RemindersBell } from "@/components/study/RemindersBell";
 
 export function Header() {
   const { user, signOut } = useAuth();
@@ -49,6 +50,7 @@ export function Header() {
             {new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false })}
           </p>
         </div>
+        <RemindersBell />
         <button
           onClick={signOut}
           className="size-10 rounded-xl glass flex items-center justify-center text-muted-foreground hover:text-destructive transition"
