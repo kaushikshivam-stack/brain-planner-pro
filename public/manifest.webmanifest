@@ -1,0 +1,26 @@
+{
+  "name": "Noesis — Smart Study Planner",
+  "short_name": "Noesis",
+  "description": "AI-powered study planner with schedule, goals, pomodoro, and analytics.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b0d1a",
+  "theme_color": "#0b0d1a",
+  "categories": ["education", "productivity"],
+  "icons": [
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
