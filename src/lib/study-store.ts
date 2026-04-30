@@ -19,6 +19,8 @@ export type Subject = {
   goalHours: number;
   completedHours: number;
   color: string;
+  examDate?: string | null;
+  isWeak: boolean;
 };
 
 export type StudySession = {
@@ -79,6 +81,8 @@ export function useStudyData() {
         goalHours: Number(r.goal_hours),
         completedHours: Number(r.completed_hours),
         color: r.color,
+        examDate: r.exam_date ?? null,
+        isWeak: r.is_weak ?? false,
       })),
       schedule: (schedRes.data ?? []).map((r) => ({
         id: r.id,
@@ -120,6 +124,49 @@ export function useStudyData() {
 
   const removeSubject = async (id: string) => {
     await supabase.from("subjects").delete().eq("id", id);
+    reload();
+  };
+
+  const updateSubject = async (
+    id: string,
+    patch: Partial<{ goalHours: number; examDate: string | null; isWeak: boolean; name: string }>,
+  ) => {
+    const dbPatch: Record<string, unknown> = {};
+    if (patch.goalHours !== undefined) dbPatch.goal_hours = patch.goalHours;
+    if (patch.examDate !== undefined) dbPatch.exam_date = patch.examDate;
+    if (patch.isWeak !== undefined) dbPatch.is_weak = patch.isWeak;
+    if (patch.name !== undefined) dbPatch.name = patch.name;
+    await supabase.from("subjects").update(dbPatch).eq("id", id);
+    reload();
+  };
+
+  const addBlocksBulk = async (
+    blocks: Array<Omit<ScheduleBlock, "id" | "done">>,
+    opts?: { replaceFutureFrom?: string },
+  ) => {
+    if (!user) return;
+    if (opts?.replaceFutureFrom) {
+      // Remove undone future blocks from this date onward, so AI plan replaces cleanly
+      await supabase
+        .from("schedule_blocks")
+        .delete()
+        .eq("user_id", user.id)
+        .gte("date", opts.replaceFutureFrom)
+        .eq("done", false);
+    }
+    if (blocks.length > 0) {
+      await supabase.from("schedule_blocks").insert(
+        blocks.map((b) => ({
+          user_id: user.id,
+          date: b.date,
+          start_time: b.startTime,
+          end_time: b.endTime,
+          subject: b.subject,
+          topic: b.topic,
+          done: false,
+        })),
+      );
+    }
     reload();
   };
 
