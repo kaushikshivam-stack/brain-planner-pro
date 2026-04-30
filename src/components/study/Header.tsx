@@ -3,6 +3,9 @@ import { useAuth } from "@/lib/auth-context";
 import { useStudyData } from "@/lib/study-store";
 import { todayStr } from "@/lib/study-store";
 import { RemindersBell } from "@/components/study/RemindersBell";
+import { TimetableGenerator } from "@/components/study/TimetableGenerator";
+import { RecoveryButton } from "@/components/study/RecoveryButton";
+import { StreakBadge } from "@/components/study/StreakBadge";
 
 export function Header() {
   const { user, signOut } = useAuth();
