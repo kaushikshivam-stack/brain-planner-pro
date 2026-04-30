@@ -213,8 +213,45 @@ export function useStudyData() {
     reload,
     addSubject,
     removeSubject,
+    updateSubject,
     addBlock,
+    addBlocksBulk,
     toggleBlock,
     logSession,
   };
+}
+
+// Compute consecutive-day streak based on "all scheduled blocks for that day done".
+// Days with zero scheduled blocks break the streak (no plan = no commitment met).
+// We start counting from today if today has blocks all done, otherwise from yesterday.
+export function computeStreak(schedule: ScheduleBlock[]): number {
+  const byDate = new Map<string, ScheduleBlock[]>();
+  for (const b of schedule) {
+    if (!byDate.has(b.date)) byDate.set(b.date, []);
+    byDate.get(b.date)!.push(b);
+  }
+  const today = todayStr();
+  let streak = 0;
+  const cursor = new Date(today + "T00:00:00");
+
+  // If today is not yet fully done, don't penalize — start from yesterday.
+  const todayBlocks = byDate.get(today) ?? [];
+  const todayComplete = todayBlocks.length > 0 && todayBlocks.every((b) => b.done);
+  if (!todayComplete) cursor.setDate(cursor.getDate() - 1);
+
+  while (true) {
+    const key = cursor.toISOString().slice(0, 10);
+    const blocks = byDate.get(key);
+    if (!blocks || blocks.length === 0) break;
+    if (!blocks.every((b) => b.done)) break;
+    streak += 1;
+    cursor.setDate(cursor.getDate() - 1);
+    if (streak > 365) break;
+  }
+  return streak;
+}
+
+export function getMissedBlocks(schedule: ScheduleBlock[]): ScheduleBlock[] {
+  const today = todayStr();
+  return schedule.filter((b) => b.date < today && !b.done);
 }
