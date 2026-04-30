@@ -1,5 +1,5 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { Header } from "@/components/study/Header";
 import { ScheduleList } from "@/components/study/ScheduleList";
@@ -9,7 +9,6 @@ import { PomodoroTimer } from "@/components/study/PomodoroTimer";
 import { AICopilot } from "@/components/study/AICopilot";
 import { Toaster } from "@/components/ui/sonner";
 import { useAuth } from "@/lib/auth-context";
-import { useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
   component: Index,
