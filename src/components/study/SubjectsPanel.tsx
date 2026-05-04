@@ -79,9 +79,11 @@ export function SubjectsPanel() {
                     {pct}%
                   </span>
                   <button
-                    onClick={() => removeSubject(s.id)}
-                    className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition"
-                    aria-label="Remove"
+                    onClick={() => {
+                      if (confirm(`Delete "${s.name}"?`)) removeSubject(s.id);
+                    }}
+                    className="size-7 rounded-md flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition"
+                    aria-label={`Remove ${s.name}`}
                   >
                     <Trash2 className="size-3.5" />
                   </button>
