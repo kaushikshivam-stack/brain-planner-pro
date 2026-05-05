@@ -189,21 +189,50 @@ export function useStudyData() {
     reload();
   };
 
-  const toggleBlock = async (id: string, done: boolean) => {
-    await supabase.from("schedule_blocks").update({ done }).eq("id", id);
-    setData((d) => ({
-      ...d,
-      schedule: d.schedule.map((b) => (b.id === id ? { ...b, done } : b)),
-    }));
+  const blockHours = (start: string, end: string) => {
+    const [sh, sm] = start.split(":").map(Number);
+    const [eh, em] = end.split(":").map(Number);
+    const mins = eh * 60 + em - (sh * 60 + sm);
+    return Math.max(0, mins / 60);
   };
 
-  const logSession = async (minutes: number) => {
+  const addHoursToSubjectByName = async (name: string, deltaHours: number) => {
+    const subj = data.subjects.find((s) => s.name.toLowerCase() === name.toLowerCase());
+    if (!subj) return;
+    const next = Math.max(0, Number((subj.completedHours + deltaHours).toFixed(2)));
+    await supabase.from("subjects").update({ completed_hours: next }).eq("id", subj.id);
+  };
+
+  const toggleBlock = async (id: string, done: boolean) => {
+    const block = data.schedule.find((b) => b.id === id);
+    await supabase.from("schedule_blocks").update({ done }).eq("id", id);
+    if (block) {
+      const hrs = blockHours(block.startTime, block.endTime);
+      // If marking done and was not done -> add. If unmarking and was done -> subtract.
+      if (done && !block.done && hrs > 0) {
+        await addHoursToSubjectByName(block.subject, hrs);
+      } else if (!done && block.done && hrs > 0) {
+        await addHoursToSubjectByName(block.subject, -hrs);
+      }
+    }
+    reload();
+  };
+
+  const logSession = async (minutes: number, subjectId?: string | null) => {
     if (!user) return;
     await supabase.from("study_sessions").insert({
       user_id: user.id,
       minutes,
+      subject_id: subjectId ?? null,
       date: todayStr(),
     });
+    if (subjectId) {
+      const subj = data.subjects.find((s) => s.id === subjectId);
+      if (subj) {
+        const next = Number((subj.completedHours + minutes / 60).toFixed(2));
+        await supabase.from("subjects").update({ completed_hours: next }).eq("id", subjectId);
+      }
+    }
     reload();
   };
 
