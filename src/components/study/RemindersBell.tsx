@@ -50,13 +50,13 @@ export function RemindersBell() {
               <ul className="space-y-1">
                 {reminders.map((r) => (
                   <li key={r.id} className="p-2 rounded-lg hover:bg-white/[0.03] transition">
-                    <p className="text-sm font-medium text-foreground">{r.title}</p>
-                    <p className="text-xs text-muted-foreground">{r.body}</p>
-                    <div className="flex items-center justify-between mt-1.5">
+                    <p className="text-sm font-medium text-foreground break-words">{r.title}</p>
+                    <p className="text-xs text-muted-foreground break-words">{r.body}</p>
+                    <div className="flex items-center justify-between flex-wrap gap-2 mt-1.5">
                       <p className="text-[10px] text-muted-foreground/60 text-mono">
                         {new Date(r.at).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
                       </p>
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-1 flex-shrink-0">
                         <span className="text-[9px] uppercase tracking-wider text-muted-foreground/60 mr-1">Snooze</span>
                         {snoozeOptions.map((m) => (
                           <button
