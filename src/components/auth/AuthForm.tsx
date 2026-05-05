@@ -19,7 +19,7 @@ export function AuthForm() {
     setLoading(true);
     try {
       if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -28,12 +28,24 @@ export function AuthForm() {
           },
         });
         if (error) throw error;
-        toast.success("Account created! Check your email to confirm.");
-        // If email confirmation disabled, session will auto-set; redirect either way
+        // Supabase returns a user with empty identities array when email already exists
+        if (data.user && data.user.identities && data.user.identities.length === 0) {
+          toast.error("This email is already registered. Please sign in instead.");
+          setMode("signin");
+          return;
+        }
+        toast.success("Account created!");
         navigate({ to: "/" });
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+        if (error) {
+          if (error.message.toLowerCase().includes("invalid")) {
+            toast.error("No account found with these credentials. Please sign up first.");
+          } else {
+            toast.error(error.message);
+          }
+          return;
+        }
         toast.success("Welcome back.");
         navigate({ to: "/" });
       }
