@@ -204,17 +204,7 @@ export function useStudyData() {
   };
 
   const toggleBlock = async (id: string, done: boolean) => {
-    const block = data.schedule.find((b) => b.id === id);
     await supabase.from("schedule_blocks").update({ done }).eq("id", id);
-    if (block) {
-      const hrs = blockHours(block.startTime, block.endTime);
-      // If marking done and was not done -> add. If unmarking and was done -> subtract.
-      if (done && !block.done && hrs > 0) {
-        await addHoursToSubjectByName(block.subject, hrs);
-      } else if (!done && block.done && hrs > 0) {
-        await addHoursToSubjectByName(block.subject, -hrs);
-      }
-    }
     reload();
   };
 
