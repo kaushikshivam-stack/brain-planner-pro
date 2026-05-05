@@ -119,7 +119,7 @@ export function PomodoroTimer() {
         </button>
       </div>
 
-      <div className="flex gap-1 text-[10px] uppercase tracking-widest">
+      <div className="flex gap-1 text-[10px] uppercase tracking-widest mb-3">
         {(Object.keys(MODES) as Mode[]).map((m) => (
           <button
             key={m}
@@ -132,6 +132,21 @@ export function PomodoroTimer() {
           </button>
         ))}
       </div>
+
+      {mode === "focus" && data.subjects.length > 0 && (
+        <select
+          value={subjectId}
+          onChange={(e) => setSubjectId(e.target.value)}
+          className="w-full max-w-[220px] bg-transparent border border-glass-border rounded-lg px-3 py-1.5 text-xs outline-none focus:border-primary text-muted-foreground"
+        >
+          <option value="">No subject (just log time)</option>
+          {data.subjects.map((s) => (
+            <option key={s.id} value={s.id} className="bg-background">
+              {s.name}
+            </option>
+          ))}
+        </select>
+      )}
     </div>
   );
 }
