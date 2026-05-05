@@ -12,11 +12,14 @@ const MODES = {
 type Mode = keyof typeof MODES;
 
 export function PomodoroTimer() {
-  const { logSession } = useStudyData();
+  const { data, logSession } = useStudyData();
   const [mode, setMode] = useState<Mode>("focus");
   const [secondsLeft, setSecondsLeft] = useState(MODES.focus.minutes * 60);
   const [running, setRunning] = useState(false);
+  const [subjectId, setSubjectId] = useState<string>("");
   const startedAt = useRef<number | null>(null);
+  const subjectIdRef = useRef<string>("");
+  subjectIdRef.current = subjectId;
 
   useEffect(() => {
     if (!running) return;
@@ -26,8 +29,14 @@ export function PomodoroTimer() {
           setRunning(false);
           if (mode === "focus" && startedAt.current) {
             const minutes = MODES.focus.minutes;
-            logSession(minutes);
-            toast.success(`Nice! ${minutes} min focus session logged.`);
+            const sid = subjectIdRef.current || null;
+            logSession(minutes, sid);
+            const subjName = sid ? data.subjects.find((x) => x.id === sid)?.name : null;
+            toast.success(
+              subjName
+                ? `${minutes} min logged to ${subjName}.`
+                : `Nice! ${minutes} min focus session logged.`,
+            );
           } else {
             toast(`${MODES[mode].label} complete.`);
           }
@@ -38,7 +47,7 @@ export function PomodoroTimer() {
       });
     }, 1000);
     return () => clearInterval(t);
-  }, [running, mode, logSession]);
+  }, [running, mode, logSession, data.subjects]);
 
   const setModeReset = (m: Mode) => {
     setMode(m);
@@ -110,7 +119,7 @@ export function PomodoroTimer() {
         </button>
       </div>
 
-      <div className="flex gap-1 text-[10px] uppercase tracking-widest">
+      <div className="flex gap-1 text-[10px] uppercase tracking-widest mb-3">
         {(Object.keys(MODES) as Mode[]).map((m) => (
           <button
             key={m}
@@ -123,6 +132,21 @@ export function PomodoroTimer() {
           </button>
         ))}
       </div>
+
+      {mode === "focus" && data.subjects.length > 0 && (
+        <select
+          value={subjectId}
+          onChange={(e) => setSubjectId(e.target.value)}
+          className="w-full max-w-[220px] bg-transparent border border-glass-border rounded-lg px-3 py-1.5 text-xs outline-none focus:border-primary text-muted-foreground"
+        >
+          <option value="">No subject (just log time)</option>
+          {data.subjects.map((s) => (
+            <option key={s.id} value={s.id} className="bg-background">
+              {s.name}
+            </option>
+          ))}
+        </select>
+      )}
     </div>
   );
 }
