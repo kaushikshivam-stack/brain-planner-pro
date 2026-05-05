@@ -33,7 +33,7 @@ export function RemindersBell() {
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 mt-2 w-80 max-h-96 overflow-auto glass rounded-2xl p-3 z-50 border border-glass-border">
+          <div className="fixed left-2 right-2 top-16 sm:absolute sm:left-auto sm:right-0 sm:top-auto sm:mt-2 sm:w-80 sm:inset-x-auto max-h-[70vh] sm:max-h-96 overflow-auto glass rounded-2xl p-3 z-50 border border-glass-border bg-background/95 backdrop-blur-xl">
             <div className="flex items-center justify-between mb-2 px-1">
               <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Reminders</p>
               {reminders.length > 0 && (
@@ -50,13 +50,13 @@ export function RemindersBell() {
               <ul className="space-y-1">
                 {reminders.map((r) => (
                   <li key={r.id} className="p-2 rounded-lg hover:bg-white/[0.03] transition">
-                    <p className="text-sm font-medium text-foreground">{r.title}</p>
-                    <p className="text-xs text-muted-foreground">{r.body}</p>
-                    <div className="flex items-center justify-between mt-1.5">
+                    <p className="text-sm font-medium text-foreground break-words">{r.title}</p>
+                    <p className="text-xs text-muted-foreground break-words">{r.body}</p>
+                    <div className="flex items-center justify-between flex-wrap gap-2 mt-1.5">
                       <p className="text-[10px] text-muted-foreground/60 text-mono">
                         {new Date(r.at).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
                       </p>
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-1 flex-shrink-0">
                         <span className="text-[9px] uppercase tracking-wider text-muted-foreground/60 mr-1">Snooze</span>
                         {snoozeOptions.map((m) => (
                           <button
