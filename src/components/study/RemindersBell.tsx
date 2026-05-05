@@ -33,7 +33,7 @@ export function RemindersBell() {
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 mt-2 w-80 max-h-96 overflow-auto glass rounded-2xl p-3 z-50 border border-glass-border">
+          <div className="fixed left-2 right-2 top-16 sm:absolute sm:left-auto sm:right-0 sm:top-auto sm:mt-2 sm:w-80 sm:inset-x-auto max-h-[70vh] sm:max-h-96 overflow-auto glass rounded-2xl p-3 z-50 border border-glass-border bg-background/95 backdrop-blur-xl">
             <div className="flex items-center justify-between mb-2 px-1">
               <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Reminders</p>
               {reminders.length > 0 && (
