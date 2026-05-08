@@ -72,7 +72,9 @@ export function emitReward(e: RewardEvent) {
 }
 export function onReward(l: (e: RewardEvent) => void) {
   listeners.add(l);
-  return () => listeners.delete(l);
+  return () => {
+    listeners.delete(l);
+  };
 }
 
 function weekStart(d = new Date()) {
