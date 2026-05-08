@@ -160,6 +160,69 @@ export type Database = {
         }
         Relationships: []
       }
+      user_achievements: {
+        Row: {
+          achievement_key: string
+          id: string
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          achievement_key: string
+          id?: string
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          achievement_key?: string
+          id?: string
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_rewards: {
+        Row: {
+          created_at: string
+          id: string
+          level: number
+          longest_streak: number
+          total_minutes: number
+          total_sessions: number
+          updated_at: string
+          user_id: string
+          weekly_start: string
+          weekly_xp: number
+          xp: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          level?: number
+          longest_streak?: number
+          total_minutes?: number
+          total_sessions?: number
+          updated_at?: string
+          user_id: string
+          weekly_start?: string
+          weekly_xp?: number
+          xp?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          level?: number
+          longest_streak?: number
+          total_minutes?: number
+          total_sessions?: number
+          updated_at?: string
+          user_id?: string
+          weekly_start?: string
+          weekly_xp?: number
+          xp?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
