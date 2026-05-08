@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Play, Pause, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
-import { useStudyData } from "@/lib/study-store";
+import { computeStreak, useStudyData } from "@/lib/study-store";
+import { useRewards } from "@/lib/rewards-store";
 
 const MODES = {
   focus: { label: "Focus", minutes: 25 },
@@ -13,6 +14,7 @@ type Mode = keyof typeof MODES;
 
 export function PomodoroTimer() {
   const { data, logSession } = useStudyData();
+  const { award } = useRewards();
   const [mode, setMode] = useState<Mode>("focus");
   const [secondsLeft, setSecondsLeft] = useState(MODES.focus.minutes * 60);
   const [running, setRunning] = useState(false);
@@ -31,6 +33,7 @@ export function PomodoroTimer() {
             const minutes = MODES.focus.minutes;
             const sid = subjectIdRef.current || null;
             logSession(minutes, sid);
+            award(minutes, computeStreak(data.schedule));
             const subjName = sid ? data.subjects.find((x) => x.id === sid)?.name : null;
             toast.success(
               subjName
@@ -47,7 +50,7 @@ export function PomodoroTimer() {
       });
     }, 1000);
     return () => clearInterval(t);
-  }, [running, mode, logSession, data.subjects]);
+  }, [running, mode, logSession, data.subjects, data.schedule, award]);
 
   const setModeReset = (m: Mode) => {
     setMode(m);
