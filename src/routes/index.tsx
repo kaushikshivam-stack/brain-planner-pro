@@ -54,7 +54,7 @@ function Index() {
       </section>
 
       <footer className="text-center text-[10px] uppercase tracking-[0.2em] text-muted-foreground/60 py-6">
-        Noesis · Smart Study Planner · Built with Lovable
+        Noesis · Smart Study Planner
       </footer>
 
       <Toaster />
