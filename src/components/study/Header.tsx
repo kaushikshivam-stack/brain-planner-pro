@@ -6,6 +6,7 @@ import { RemindersBell } from "@/components/study/RemindersBell";
 import { TimetableGenerator } from "@/components/study/TimetableGenerator";
 import { RecoveryButton } from "@/components/study/RecoveryButton";
 import { StreakBadge } from "@/components/study/StreakBadge";
+import { RewardsPanel } from "@/components/study/RewardsPanel";
 
 export function Header() {
   const { user, signOut } = useAuth();
@@ -48,6 +49,7 @@ export function Header() {
 
       <div className="flex items-center gap-2 flex-wrap justify-end">
         <StreakBadge />
+        <RewardsPanel />
         <RecoveryButton />
         <TimetableGenerator />
         <div className="text-right ml-2">

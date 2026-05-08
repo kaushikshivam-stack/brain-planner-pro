@@ -8,6 +8,7 @@ import { AnalyticsChart } from "@/components/study/AnalyticsChart";
 import { PomodoroTimer } from "@/components/study/PomodoroTimer";
 import { AICopilot } from "@/components/study/AICopilot";
 import { Toaster } from "@/components/ui/sonner";
+import { RewardPopup } from "@/components/study/RewardPopup";
 import { useAuth } from "@/lib/auth-context";
 
 export const Route = createFileRoute("/")({
@@ -58,6 +59,7 @@ function Index() {
       </footer>
 
       <Toaster />
+      <RewardPopup />
     </div>
   );
 }
