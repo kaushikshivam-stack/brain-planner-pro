@@ -1,6 +1,6 @@
 # 🚀 Neosis Study Co-Pilot
 
-> An AI-powered productivity and study management platform designed to help students stay focused, organized, and consistent.
+> An AI-powered productivity and study management platform designed to help students stay focused, organized, & consistent.
 
 🌐 **Live Demo:** https://kaushikshivam-stack.github.io/brain-planner-pro/auth
 
