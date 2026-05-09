@@ -132,4 +132,36 @@
     box-shadow: 0 0 20px -4px color-mix(in oklab, var(--primary) 60%, transparent);
   }
   .text-mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+  .float-anim { animation: float 5s ease-in-out infinite; }
+  .hover-lift { transition: transform 0.3s cubic-bezier(0.2,0.9,0.3,1.2), box-shadow 0.3s; }
+  .hover-lift:hover { transform: translateY(-2px); box-shadow: 0 10px 30px -12px color-mix(in oklab, var(--primary) 50%, transparent); }
 }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+@keyframes ai-pulse {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.15); }
+}
+@keyframes shimmer {
+  to { background-position: 200% center; }
+}
+@keyframes aurora {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.55; }
+  33% { transform: translate(3%, -2%) scale(1.08); opacity: 0.75; }
+  66% { transform: translate(-2%, 3%) scale(0.96); opacity: 0.65; }
+}
+.aurora-bg::before, .aurora-bg::after {
+  content: ""; position: fixed; inset: -20%; pointer-events: none; z-index: -1;
+  background: radial-gradient(ellipse 50% 40% at 30% 20%, color-mix(in oklab, var(--primary) 22%, transparent), transparent 60%),
+              radial-gradient(ellipse 40% 35% at 80% 80%, color-mix(in oklab, var(--accent) 18%, transparent), transparent 60%);
+  filter: blur(40px);
+  animation: aurora 18s ease-in-out infinite;
+}
+.aurora-bg::after {
+  background: radial-gradient(ellipse 45% 35% at 70% 30%, color-mix(in oklab, var(--accent) 15%, transparent), transparent 60%),
+              radial-gradient(ellipse 50% 40% at 20% 90%, color-mix(in oklab, var(--primary) 20%, transparent), transparent 60%);
+  animation-duration: 24s;
+  animation-direction: reverse;
