@@ -2,7 +2,7 @@
 
 > An AI-powered productivity and study management platform designed to help students stay focused, organized, and consistent.
 
-🌐 **Live Demo:** [https://kaushikshivam-stack.github.io/brain-planner-pro/auth](https://kaushikshivam-stack.github.io/brain-planner-pro/auth)
+🌐 **Live Demo:** https://kaushikshivam-stack.github.io/brain-planner-pro/auth
 
 ---
 
