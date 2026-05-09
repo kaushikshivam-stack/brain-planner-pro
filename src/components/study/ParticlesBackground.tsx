@@ -94,7 +94,7 @@ export function ParticlesBackground() {
     <canvas
       ref={ref}
       aria-hidden
-      className="fixed inset-0 -z-10 w-full h-full pointer-events-none opacity-60"
+      className="fixed inset-0 z-0 w-full h-full pointer-events-none opacity-90"
     />
   );
 }
