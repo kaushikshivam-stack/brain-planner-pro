@@ -165,3 +165,4 @@
               radial-gradient(ellipse 50% 40% at 20% 90%, color-mix(in oklab, var(--primary) 20%, transparent), transparent 60%);
   animation-duration: 24s;
   animation-direction: reverse;
+}
