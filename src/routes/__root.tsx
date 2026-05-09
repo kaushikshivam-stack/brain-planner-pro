@@ -1,8 +1,8 @@
-import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import { Outlet, Link, createRootRoute } from "@tanstack/react-router";
 import { Toaster } from "sonner";
 import { AuthProvider } from "@/lib/auth-context";
 
-import appCss from "../styles.css?url";
+import "../styles.css";
 
 function NotFoundComponent() {
   return (
@@ -27,65 +27,9 @@ function NotFoundComponent() {
 }
 
 export const Route = createRootRoute({
-  head: () => ({
-    meta: [
-      { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Noesis — Smart Study Planner & AI Co-pilot" },
-      { name: "description", content: "AI-powered study planner with daily schedule, subject goals, pomodoro timer, and progress analytics for students." },
-      { name: "author", content: "Noesis" },
-      { property: "og:title", content: "Noesis — Smart Study Planner & AI Co-pilot" },
-      { property: "og:description", content: "AI-powered study planner with daily schedule, subject goals, pomodoro timer, and progress analytics for students." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
-      { name: "theme-color", content: "#0b0d1a" },
-      { name: "mobile-web-app-capable", content: "yes" },
-      { name: "apple-mobile-web-app-capable", content: "yes" },
-      { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
-      { name: "apple-mobile-web-app-title", content: "Noesis" },
-      { name: "twitter:title", content: "Noesis — Smart Study Planner & AI Co-pilot" },
-      { name: "twitter:description", content: "AI-powered study planner with daily schedule, subject goals, pomodoro timer, and progress analytics for students." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/1a21913f-bdff-49a8-91e8-77d33434031f/id-preview-0abffc70--478da829-ccb1-483d-8ef3-d68f37a3e0f1.lovable.app-1777550769813.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/1a21913f-bdff-49a8-91e8-77d33434031f/id-preview-0abffc70--478da829-ccb1-483d-8ef3-d68f37a3e0f1.lovable.app-1777550769813.png" },
-    ],
-    links: [
-      { rel: "stylesheet", href: appCss },
-      { rel: "manifest", href: "/manifest.webmanifest" },
-      { rel: "icon", href: "/favicon.ico", sizes: "any" },
-      { rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon-16.png" },
-      { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon-32.png" },
-      { rel: "icon", type: "image/png", sizes: "192x192", href: "/icon-192.png" },
-      { rel: "icon", type: "image/png", sizes: "512x512", href: "/icon-512.png" },
-      { rel: "apple-touch-icon", sizes: "152x152", href: "/icon-152.png" },
-      { rel: "apple-touch-icon", sizes: "167x167", href: "/icon-167.png" },
-      { rel: "apple-touch-icon", sizes: "180x180", href: "/icon-180.png" },
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      {
-        rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600&display=swap",
-      },
-    ],
-  }),
-  shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
 });
-
-function RootShell({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        {children}
-        <Scripts />
-      </body>
-    </html>
-  );
-}
 
 function RootComponent() {
   return (
