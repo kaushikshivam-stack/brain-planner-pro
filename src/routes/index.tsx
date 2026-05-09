@@ -10,6 +10,7 @@ import { AICopilot } from "@/components/study/AICopilot";
 import { Toaster } from "@/components/ui/sonner";
 import { RewardPopup } from "@/components/study/RewardPopup";
 import { ParticlesBackground } from "@/components/study/ParticlesBackground";
+import { GlowGradients } from "@/components/study/GlowGradients";
 import { useAuth } from "@/lib/auth-context";
 
 export const Route = createFileRoute("/")({
@@ -36,6 +37,7 @@ function Index() {
 
   return (
     <>
+      <GlowGradients />
       <ParticlesBackground />
       <div className="min-h-dvh w-full px-4 sm:px-8 py-8 max-w-7xl mx-auto aurora-bg relative">
         <Header />
