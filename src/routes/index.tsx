@@ -35,9 +35,10 @@ function Index() {
   }
 
   return (
-    <div className="min-h-dvh w-full px-4 sm:px-8 py-8 max-w-7xl mx-auto aurora-bg relative">
+    <>
       <ParticlesBackground />
-      <Header />
+      <div className="min-h-dvh w-full px-4 sm:px-8 py-8 max-w-7xl mx-auto aurora-bg relative">
+        <Header />
 
       <main className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-10">
         <div className="lg:col-span-4">
@@ -60,8 +61,9 @@ function Index() {
         Noesis · Smart Study Planner
       </footer>
 
-      <Toaster />
-      <RewardPopup />
-    </div>
+        <Toaster />
+        <RewardPopup />
+      </div>
+    </>
   );
 }
