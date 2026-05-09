@@ -127,14 +127,58 @@
     border: 1px solid var(--glass-border);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
+    transition:
+      transform 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.2),
+      box-shadow 0.45s ease,
+      border-color 0.45s ease,
+      background-color 0.45s ease;
+    will-change: transform;
+  }
+  .glass:hover {
+    transform: translateY(-3px);
+    border-color: color-mix(in oklab, var(--primary) 45%, var(--glass-border));
+    background-color: color-mix(in oklab, var(--primary) 5%, var(--glass));
+    box-shadow:
+      0 14px 40px -16px color-mix(in oklab, var(--primary) 55%, transparent),
+      0 0 0 1px color-mix(in oklab, var(--primary) 20%, transparent),
+      inset 0 1px 0 0 color-mix(in oklab, white 8%, transparent);
   }
   .glow-primary {
     box-shadow: 0 0 20px -4px color-mix(in oklab, var(--primary) 60%, transparent);
   }
   .text-mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
   .float-anim { animation: float 5s ease-in-out infinite; }
-  .hover-lift { transition: transform 0.3s cubic-bezier(0.2,0.9,0.3,1.2), box-shadow 0.3s; }
-  .hover-lift:hover { transform: translateY(-2px); box-shadow: 0 10px 30px -12px color-mix(in oklab, var(--primary) 50%, transparent); }
+  .hover-lift { transition: transform 0.35s cubic-bezier(0.2,0.9,0.3,1.2), box-shadow 0.35s, filter 0.35s; }
+  .hover-lift:hover { transform: translateY(-2px); box-shadow: 0 10px 30px -12px color-mix(in oklab, var(--primary) 50%, transparent); filter: brightness(1.08); }
+
+  .hover-glow { transition: box-shadow 0.4s ease, transform 0.3s ease; }
+  .hover-glow:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0 28px -6px color-mix(in oklab, var(--primary) 70%, transparent);
+  }
+
+  /* Smooth scale + subtle glow for icon buttons */
+  button, a {
+    transition: transform 0.2s ease, color 0.2s ease, background-color 0.2s ease, box-shadow 0.3s ease, opacity 0.2s ease;
+  }
+
+  /* Animated shine sweep on hover — add `.shine` to any element */
+  .shine { position: relative; overflow: hidden; isolation: isolate; }
+  .shine::before {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(115deg, transparent 30%, color-mix(in oklab, white 18%, transparent) 50%, transparent 70%);
+    transform: translateX(-120%);
+    transition: transform 0.8s cubic-bezier(0.2, 0.9, 0.3, 1);
+  }
+  .shine:hover::before { transform: translateX(120%); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .glass, .hover-lift, .hover-glow, .shine::before, button, a {
+      transition: none !important;
+      animation: none !important;
+    }
+    .glass:hover, .hover-lift:hover, .hover-glow:hover { transform: none !important; }
+  }
 }
 
 @keyframes float {
