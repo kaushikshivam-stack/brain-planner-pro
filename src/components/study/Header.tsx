@@ -57,6 +57,7 @@ export function Header() {
             {done}/{blocks.length} blocks complete · {(totalMins / 60).toFixed(1)}h focused today
           </p>
         )}
+        </div>
       </div>
 
       <div className="flex items-center gap-2 flex-wrap justify-end">
@@ -73,7 +74,7 @@ export function Header() {
         <RemindersBell />
         <button
           onClick={signOut}
-          className="size-10 rounded-xl glass flex items-center justify-center text-muted-foreground hover:text-destructive transition"
+          className="size-10 rounded-xl glass flex items-center justify-center text-muted-foreground hover:text-destructive hover:border-destructive/40 hover:scale-105 transition-all"
           aria-label="Sign out"
           title="Sign out"
         >
