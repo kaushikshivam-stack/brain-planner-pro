@@ -7,6 +7,7 @@ import { TimetableGenerator } from "@/components/study/TimetableGenerator";
 import { RecoveryButton } from "@/components/study/RecoveryButton";
 import { StreakBadge } from "@/components/study/StreakBadge";
 import { RewardsPanel } from "@/components/study/RewardsPanel";
+import { UserGuideModal } from "@/components/study/UserGuideModal";
 
 export function Header() {
   const { user, signOut } = useAuth();
@@ -65,6 +66,7 @@ export function Header() {
         <RewardsPanel />
         <RecoveryButton />
         <TimetableGenerator />
+        <UserGuideModal />
         <div className="text-right ml-2">
           <p className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">Local Time</p>
           <p className="text-mono text-2xl font-light text-foreground">
